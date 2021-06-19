@@ -1,4 +1,5 @@
 import React from "react";
+import Customers from '../views/Customers'
 
 const Dashboard = (props) => {
   function handleLogout() {
@@ -16,6 +17,9 @@ const Dashboard = (props) => {
           Logout
         </button>
       </nav>
+      <div>
+          <Customers/>
+      </div>
     </div>
   );
 };

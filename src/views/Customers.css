@@ -1,0 +1,14 @@
+.cusTableBody > td {
+    @apply border-4 p-4 text-center
+}
+
+.cusTableBody > td > div{
+    @apply flex justify-between space-x-5
+}
+.cusTableBody > td > div > input{
+    
+}
+
+th{
+    @apply border-4
+}

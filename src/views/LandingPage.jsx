@@ -59,7 +59,7 @@ const LandingPage = () => {
       });
   }
   return (
-    <div>
+    <div className="mx-auto" style={{maxWidth:900}}>
       {loaded ? (
         <div>{loggedIn ? <DashboardWindow /> : <LoginPrompt />}</div>
       ) : (
