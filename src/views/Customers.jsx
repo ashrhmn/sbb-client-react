@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Customers.css";
+import {apiURL, token} from '../Consts'
 
 const Customers = () => {
   const [loaded, setLoaded] = useState(false);
@@ -18,9 +19,9 @@ const Customers = () => {
 
   const getCustomers = () => {
     axios
-      .get("http://localhost:8080/customers", {
+      .get(`${apiURL}customers`, {
         headers: {
-          "auth-token": localStorage.getItem("JWToken") || "",
+          "auth-token": token(),
         },
       })
       .then((response) => {
@@ -67,9 +68,9 @@ const Customers = () => {
 
   const handleAddCustomer = () => {
     axios
-      .post("http://localhost:8080/customers", newCustomer, {
+      .post(`${apiURL}customers`, newCustomer, {
         headers: {
-          "auth-token": localStorage.getItem("JWToken") || "",
+          "auth-token": token(),
         },
       })
       .then((response) => {
@@ -85,9 +86,9 @@ const Customers = () => {
 
   const handleDeleteCustomer = (index) => {
     axios
-      .delete("http://localhost:8080/customers/" + tableData[index].id, {
+      .delete(`${apiURL}customers/${tableData[index].id}`, {
         headers: {
-          "auth-token": localStorage.getItem("JWToken") || "",
+          "auth-token": token(),
         },
       })
       .then((response) => {
@@ -103,9 +104,9 @@ const Customers = () => {
 
   const handleUpdateCustomer = (index) => {
     axios
-      .post("http://localhost:8080/customers", tableData[index], {
+      .post(`${apiURL}customers`, tableData[index], {
         headers: {
-          "auth-token": localStorage.getItem("JWToken") || "",
+          "auth-token": token(),
         },
       })
       .then((response) => {
