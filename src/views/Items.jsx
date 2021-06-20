@@ -16,6 +16,7 @@ const Items = () => {
           </tr>
         </thead>
         <tbody>
+          <AddForm />
           {data?.map((item) => (
             <Tr item={item} key={item.id} />
           ))}
@@ -66,11 +67,7 @@ const Tr = ({ item }) => {
   const [price, setPrice] = useState(0.0);
   const handleEdit = () => {
     if (editing) {
-      updateData({
-        id: id,
-        name: name,
-        price: price,
-      });
+      updateData({ id, name, price });
     } else {
       setEditing(true);
       setId(item.id);
@@ -80,11 +77,7 @@ const Tr = ({ item }) => {
   };
 
   const handleDelete = () => {
-    deleteData({
-      id: id,
-      name: name,
-      price: price,
-    });
+    deleteData({ id, name, price });
   };
   return (
     <>
@@ -105,13 +98,16 @@ const Tr = ({ item }) => {
       </tr>
       {editing ? (
         <EditForm
+          bgColor={"green"}
           setId={setId}
           setName={setName}
           setPrice={setPrice}
           id={id}
           name={name}
           price={price}
-          handleDelete={handleDelete}
+          btnText={"Delete"}
+          btnColor={"red"}
+          btnAction={handleDelete}
         />
       ) : (
         <></>
@@ -120,17 +116,61 @@ const Tr = ({ item }) => {
   );
 };
 
+const AddForm = () => {
+  const queryClient = useQueryClient();
+  const { mutate: updateData } = useMutation(
+    (item) => ItemsApi.updateItem(item),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["items"]);
+      },
+    }
+  );
+
+  const [id, setId] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+
+  const handleAdd = () => {
+    let item = null;
+    if (id) {
+      item = { id, name, price };
+    } else {
+      item = { name, price };
+    }
+    updateData(item);
+  };
+
+  return (
+    <EditForm
+      bgColor={"blue"}
+      setId={setId}
+      setName={setName}
+      setPrice={setPrice}
+      id={id}
+      name={name}
+      price={price}
+      btnText={"Add"}
+      btnColor={"green"}
+      btnAction={handleAdd}
+    />
+  );
+};
+
 const EditForm = ({
+  bgColor,
   id,
   name,
   price,
   setId,
   setName,
   setPrice,
-  handleDelete,
+  btnText,
+  btnColor,
+  btnAction,
 }) => {
   return (
-    <tr className="bg-green-500">
+    <tr className={`bg-${bgColor}-500`}>
       <td className="p-3 px-8">
         <input
           className="w-20"
@@ -157,10 +197,10 @@ const EditForm = ({
       </td>
       <td className="px-12">
         <button
-          className={`bg-red-500 text-white rounded-md p-1`}
-          onClick={handleDelete}
+          className={`bg-${btnColor}-500 text-white rounded-md p-1`}
+          onClick={btnAction}
         >
-          Delete
+          {btnText}
         </button>
       </td>
     </tr>
