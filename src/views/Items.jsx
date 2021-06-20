@@ -1,26 +1,23 @@
-import React from "react";
-import { useQuery } from "react-query";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import * as ItemsApi from "../api/ItemsApi";
 
 const Items = () => {
   const { data } = useQuery("items", ItemsApi.getItems);
   return (
-    <div>
-      <table>
+    <div className="">
+      <table className="mx-auto text-4xl border-2">
         <thead>
-          <tr>
+          <tr className="border-t-4 border-b-4 border-black">
             <th>ID</th>
             <th>Name</th>
             <th>Price</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {data?.map((item) => (
-            <tr key={item.id}>
-              <td>{item.id}</td>
-              <td>{item.name}</td>
-              <td>{item.price}</td>
-              </tr>
+            <Tr item={item} key={item.id} />
           ))}
         </tbody>
       </table>
@@ -29,3 +26,105 @@ const Items = () => {
 };
 
 export default Items;
+
+const Td = ({ data }) => {
+  return <td className="py-3 px-20">{data}</td>;
+};
+
+const Tr = ({ item }) => {
+  const [savingTxt, setSavingTxt] = useState("");
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation((item) => ItemsApi.updateItem(item), {
+    onSuccess: () => {
+      queryClient.invalidateQueries(["items"]);
+      setEditing(false);
+      setId("");
+      setName("");
+      setPrice("");
+    },
+  });
+
+  const [editing, setEditing] = useState(false);
+
+  const [id, setId] = useState(0);
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState(0.0);
+  const handleEdit = () => {
+    if (editing) {
+      setSavingTxt("Saving...");
+      mutate({
+        id: id,
+        name: name,
+        price: price,
+      });
+    } else {
+      setSavingTxt("");
+      setEditing(true);
+      setId(item.id);
+      setName(item.name);
+      setPrice(item.price);
+    }
+  };
+  return (
+    <>
+      <tr className="border-b-2 border-black">
+        <Td data={item.id} />
+        <Td data={item.name} />
+        <Td data={item.price} />
+        <td className="px-12">
+          <button
+            className={`bg-${editing?'green':'blue'}-500 text-white rounded-md p-1`}
+            onClick={handleEdit}
+          >
+            {editing ? "Save" : "Edit"}
+          </button>
+        </td>
+      </tr>
+      {editing ? (
+        <EditForm
+          setId={setId}
+          setName={setName}
+          setPrice={setPrice}
+          id={id}
+          name={name}
+          price={price}
+          savingTxt={savingTxt}
+        />
+      ) : (
+        <></>
+      )}
+    </>
+  );
+};
+
+const EditForm = ({ id, name, price, setId, setName, setPrice, savingTxt }) => {
+  return (
+    <tr className="bg-green-500">
+      <td className="p-3 px-8">
+        <input
+          className="w-20"
+          type="text"
+          value={id}
+          onChange={(e) => setId(e.target.value)}
+        />
+      </td>
+      <td className="p-3 px-8">
+        <input
+          className="w-52"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </td>
+      <td className="p-3 px-8">
+        <input
+          className="w-40"
+          type="text"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
+      </td>
+      <td className="text-white text-center">{savingTxt}</td>
+    </tr>
+  );
+};
