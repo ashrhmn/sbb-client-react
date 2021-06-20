@@ -1,5 +1,6 @@
 import React from "react";
-import Customers from '../views/Customers'
+// import Customers from '../views/Customers'
+import Items from '../views/Items'
 
 const Dashboard = (props) => {
   function handleLogout() {
@@ -18,7 +19,8 @@ const Dashboard = (props) => {
         </button>
       </nav>
       <div>
-          <Customers/>
+          {/* <Customers/> */}
+          <Items/>
       </div>
     </div>
   );
