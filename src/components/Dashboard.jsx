@@ -1,6 +1,8 @@
 import React from "react";
-// import Customers from '../views/Customers'
-import Items from '../views/Items'
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Customers from "../views/Customers";
+import Items from "../views/Items";
+import NewEntry from "../views/NewEntry";
 
 const Dashboard = (props) => {
   function handleLogout() {
@@ -19,8 +21,40 @@ const Dashboard = (props) => {
         </button>
       </nav>
       <div>
-          {/* <Customers/> */}
-          <Items/>
+        {/* <Customers/> */}
+        {/* <Items/> */}
+        {/* <NewEntry /> */}
+        <Router>
+          <div>
+            <nav className="bg-blue-300 p-8">
+              <ul>
+                <li>
+                  <Link to="/">Customers</Link>
+                </li>
+                <li>
+                  <Link to="/items">Items</Link>
+                </li>
+                <li>
+                  <Link to="/newEntry">NewEntry</Link>
+                </li>
+              </ul>
+            </nav>
+
+            {/* A <Switch> looks through its children <Route>s and
+            renders the first one that matches the current URL. */}
+            <Switch>
+              <Route path="/newEntry">
+                <NewEntry />
+              </Route>
+              <Route path="/items">
+                <Items />
+              </Route>
+              <Route path="/">
+                <Customers />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
       </div>
     </div>
   );
