@@ -27,7 +27,7 @@ const Dashboard = (props) => {
         <Router>
           <div>
             <nav className="bg-blue-300 p-8">
-              <ul>
+              <ul className="flex space-x-2 text-xl">
                 <li>
                   <Link to="/">Customers</Link>
                 </li>
