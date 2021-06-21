@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { useQuery } from "react-query";
-import * as ItemsApi from "../../api/ItemsApi";
+import { useQueryClient } from "react-query";
 import AddForm from "./AddForm";
 import TableRow from "./TableRow";
 
-
 const Items = () => {
+  const queryClient = useQueryClient();
   const [adding, setAdding] = useState(false);
-  const { data } = useQuery("items",ItemsApi.getItems);
+  const data = queryClient.getQueryData(["items"]);
   return (
     <div className="">
       <table className="mx-auto text-4xl border-2">

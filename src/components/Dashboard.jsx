@@ -1,10 +1,13 @@
 import React from "react";
+import { useQuery } from "react-query";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Customers from "../views/Customers";
 import Items from "../views/Items";
 import NewEntry from "../views/NewEntry";
+import * as ItemsApi from '../api/ItemsApi'
 
 const Dashboard = (props) => {
+  const { data: itemData } = useQuery("items", ItemsApi.getItems);
   function handleLogout() {
     localStorage.removeItem("JWToken");
     window.location.reload();
@@ -21,9 +24,6 @@ const Dashboard = (props) => {
         </button>
       </nav>
       <div>
-        {/* <Customers/> */}
-        {/* <Items/> */}
-        {/* <NewEntry /> */}
         <Router>
           <div>
             <nav className="bg-blue-300 p-8">
@@ -44,10 +44,10 @@ const Dashboard = (props) => {
             renders the first one that matches the current URL. */}
             <Switch>
               <Route path="/newEntry">
-                <NewEntry />
+                <NewEntry itemData={itemData} />
               </Route>
               <Route path="/items">
-                <Items />
+                <Items itemData={itemData} />
               </Route>
               <Route path="/">
                 <Customers />
