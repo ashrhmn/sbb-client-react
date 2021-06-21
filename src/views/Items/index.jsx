@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import * as ItemsApi from "../../api/ItemsApi";
 import AddForm from "./AddForm";
-import Tr from "./Tr";
+import TableRow from "./TableRow";
 
 
 const Items = () => {
@@ -32,7 +32,7 @@ const Items = () => {
         <tbody>
           {adding ? <AddForm /> : <></>}
           {data?.map((item) => (
-            <Tr item={item} key={item.id} />
+            <TableRow item={item} key={item.id} />
           ))}
         </tbody>
       </table>

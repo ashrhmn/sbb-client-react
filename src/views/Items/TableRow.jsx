@@ -1,10 +1,10 @@
 import {useState} from 'react'
 import { useQueryClient, useMutation } from "react-query";
 import * as ItemsApi from '../../api/ItemsApi'
-import Td from './Td'
+import TableData from './TableData'
 import EditForm from "./EditForm";
 
-const Tr = ({ item }) => {
+const TableRow = ({ item }) => {
     const queryClient = useQueryClient();
     const { mutate: updateData } = useMutation(
       (item) => ItemsApi.updateItem(item),
@@ -54,9 +54,9 @@ const Tr = ({ item }) => {
     return (
       <>
         <tr className="border-b-2 border-black">
-          <Td data={item.id} />
-          <Td data={item.name} />
-          <Td data={item.price} />
+          <TableData data={item.id} />
+          <TableData data={item.name} />
+          <TableData data={item.price} />
           <td className="px-12">
             <button
               className={`bg-${
@@ -88,4 +88,4 @@ const Tr = ({ item }) => {
     );
   };
 
-  export default Tr;
+  export default TableRow;
