@@ -9,6 +9,7 @@ const NewEntry = () => {
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerDue, setCustomerDue] = useState("");
+  const [amounts, setAmounts] = useState([]);
   return (
     <div>
       <h1>New Entry</h1>
@@ -87,10 +88,11 @@ const NewEntry = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="text-3xl">
           <table>
             <thead>
               <tr>
+                <th>Count</th>
                 <th>Item</th>
                 <th>Amount</th>
                 <th>Rate</th>
@@ -98,13 +100,14 @@ const NewEntry = () => {
               </tr>
             </thead>
             <tbody>
-              {itemData?.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.name}</td>
-                  <td>{item.price}</td>
-                  <td>{item.name}</td>
-                </tr>
+              {itemData?.map((item, index) => (
+                <TableRow
+                  item={item}
+                  amounts={amounts}
+                  setAmounts={setAmounts}
+                  index={index}
+                  key={item.id}
+                />
               ))}
             </tbody>
           </table>
@@ -115,3 +118,92 @@ const NewEntry = () => {
 };
 
 export default NewEntry;
+
+const TableRow = ({ item, amounts, index, setAmounts }) => {
+  const [editing, setEditing] = useState(true);
+  return (
+    <>
+      <tr key={item.id}>
+        <td>
+          <button
+            className="bg-yellow-300 rounded-full p-1"
+            onClick={() => setEditing(!editing)}
+          >
+            ⤵️
+          </button>{" "}
+          {amounts[index]?.length || 0}
+        </td>
+        <td>{item.name}</td>
+        <td>
+          <label>{amounts[index] || 0}</label>
+        </td>
+        <td>{item.price}</td>
+        <td>{item.name}</td>
+      </tr>
+      {editing ? (
+        <tr>
+          <td colSpan={5}>
+            <EditForm
+              preIndex={index}
+              amounts={amounts}
+              setAmounts={setAmounts}
+            />
+          </td>
+        </tr>
+      ) : (
+        <></>
+      )}
+    </>
+  );
+};
+
+const EditForm = ({ preIndex, amounts, setAmounts }) => {
+  return (
+    <div className="bg-yellow-300">
+      <table className="mx-auto text-center">
+        <thead>
+          <tr>
+            <th>-</th>
+            <th>-</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input className="w-32" type="text" />
+            </td>
+            <td>
+              <button
+                onClick={() => {
+                  var temp = [...amounts];
+                  if (!temp[preIndex]) {
+                    temp[preIndex] = [];
+                  }
+                  temp[preIndex].push(9);
+                  console.log(temp[preIndex]);
+                  setAmounts(temp);
+                  console.log(amounts);
+                }}
+              >
+                ➕
+              </button>
+            </td>
+          </tr>
+          {amounts[preIndex] ? (
+            amounts[preIndex].map((amount, index) => (
+              <tr key={`.${index + 1}`}>
+                {/* <td>{`${preIndex + 1}.${index + 1}`}</td> */}
+                <td>{amount}</td>
+                <td>
+                  <button>❌</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <></>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+};
