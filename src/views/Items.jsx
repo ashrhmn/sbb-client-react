@@ -3,20 +3,26 @@ import { useQuery, useMutation, useQueryClient } from "react-query";
 import * as ItemsApi from "../api/ItemsApi";
 
 const Items = () => {
+  const [adding, setAdding] = useState(false);
   const { data } = useQuery("items", ItemsApi.getItems);
   return (
     <div className="">
       <table className="mx-auto text-4xl border-2">
         <thead>
           <tr className="border-t-4 border-b-4 border-black">
-            <th>ID</th>
+            <th>
+              <button className={`bg-${adding?'red':'green'}-500 rounded-md px-2 text-white`} onClick={() => setAdding(!adding)}>
+                {adding ? "X" : "Add"}
+              </button>{" "}
+              ID
+            </th>
             <th>Name</th>
             <th>Price</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <AddForm />
+          {adding ? <AddForm /> : <></>}
           {data?.map((item) => (
             <Tr item={item} key={item.id} />
           ))}
