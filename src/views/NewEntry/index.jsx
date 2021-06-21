@@ -4,11 +4,11 @@ import { useState } from "react";
 const NewEntry = () => {
   const itemData = useQueryClient().getQueryData(["items"]);
   const [date, setDate] = useState("");
-  const [customerId, setCustomerId] = useState('');
-  const [customerName, setCustomerName] = useState('');
-  const [customerAddress, setCustomerAddress] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
-  const [customerDue, setCustomerDue] = useState('');
+  const [customerId, setCustomerId] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerDue, setCustomerDue] = useState("");
   return (
     <div>
       <h1>New Entry</h1>
@@ -87,9 +87,28 @@ const NewEntry = () => {
             </div>
           </div>
         </div>
-        {itemData?.map((item) => (
-          <li key={item.id}>{item.name}</li>
-        ))}
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Amount</th>
+                <th>Rate</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {itemData?.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.name}</td>
+                  <td>{item.name}</td>
+                  <td>{item.price}</td>
+                  <td>{item.name}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

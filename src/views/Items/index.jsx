@@ -9,7 +9,7 @@ const Items = () => {
   const data = queryClient.getQueryData(["items"]);
   return (
     <div className="">
-      <table className="mx-auto text-2xl border-2">
+      <table className="mx-auto text-xl border-2">
         <thead>
           <tr className="border-t-4 border-b-4 border-black">
             <th>
