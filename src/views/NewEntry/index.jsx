@@ -89,7 +89,7 @@ const NewEntry = () => {
           </div>
         </div>
         <div className="text-3xl">
-          <table>
+          <table className="mx-auto">
             <thead>
               <tr>
                 <th>Count</th>
@@ -120,25 +120,32 @@ const NewEntry = () => {
 export default NewEntry;
 
 const TableRow = ({ item, amounts, index, setAmounts }) => {
-  const [editing, setEditing] = useState(true);
+  const [editing, setEditing] = useState(false);
   return (
     <>
-      <tr key={item.id}>
-        <td>
+      <tr
+        key={item.id}
+        className={`${editing ? "bg-yellow-300" : "bg-blue-300"}`}
+      >
+        <td className="px-6 py-2 border-b-2 border-black">
           <button
-            className="bg-yellow-300 rounded-full p-1"
+            className={`${
+              editing ? "bg-blue-300" : "bg-yellow-300"
+            } rounded-full pr-3 pl-3 pt-1 pb-1`}
             onClick={() => setEditing(!editing)}
           >
-            ⤵️
-          </button>{" "}
-          {amounts[index]?.length || 0}
+            {!editing ? "⤵️" : "⤴️"}
+          </button>&nbsp;&nbsp;
+          <label className="text-right">{amounts[index]?.length || 0}</label>
         </td>
-        <td>{item.name}</td>
-        <td>
-          <label>{amounts[index] || 0}</label>
+        <td className="px-6 py-2 border-b-2 border-black">{item.name}</td>
+        <td className="px-6 py-2 border-b-2 border-black text-right">
+          <label>{require("lodash").sum(amounts[index]) || 0}</label>
         </td>
-        <td>{item.price}</td>
-        <td>{item.name}</td>
+        <td className="px-6 py-2 border-b-2 border-black text-right">{item.price}</td>
+        <td className="px-6 py-2 border-b-2 border-black text-right">
+          {item.price * require("lodash").sum(amounts[index]) || 0}
+        </td>
       </tr>
       {editing ? (
         <tr>
@@ -158,19 +165,19 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
 };
 
 const EditForm = ({ preIndex, amounts, setAmounts }) => {
+  const [amount, setAmount] = useState(0);
   return (
-    <div className="bg-yellow-300">
+    <div className="bg-yellow-300 p-2">
       <table className="mx-auto text-center">
-        <thead>
-          <tr>
-            <th>-</th>
-            <th>-</th>
-          </tr>
-        </thead>
         <tbody>
           <tr>
-            <td>
-              <input className="w-32" type="text" />
+            <td colSpan={2}>
+              <input
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-32 text-right"
+                type="text"
+              />
             </td>
             <td>
               <button
@@ -179,23 +186,44 @@ const EditForm = ({ preIndex, amounts, setAmounts }) => {
                   if (!temp[preIndex]) {
                     temp[preIndex] = [];
                   }
-                  temp[preIndex].push(9);
-                  console.log(temp[preIndex]);
-                  setAmounts(temp);
-                  console.log(amounts);
+                  if (amount) {
+                    temp[preIndex].push(parseFloat(amount));
+                    console.log(temp[preIndex]);
+                    setAmounts(temp);
+                    console.log(amounts);
+                  }
                 }}
               >
-                ➕
+                <div className="text-2xl bg-green-400 text-white border-2 border-black rounded-full pl-1 pr-1 pt-0.5 pb-0.5">
+                  ➕
+                </div>
               </button>
             </td>
           </tr>
           {amounts[preIndex] ? (
             amounts[preIndex].map((amount, index) => (
               <tr key={`.${index + 1}`}>
-                {/* <td>{`${preIndex + 1}.${index + 1}`}</td> */}
+                <td>
+                  <div className="text-xl border-2 border-black rounded-full">{`${
+                    preIndex + 1
+                  }.${index + 1}`}</div>
+                </td>
                 <td>{amount}</td>
                 <td>
-                  <button>❌</button>
+                  <button
+                    onClick={() => {
+                      var temp = [...amounts];
+                      //   temp[preIndex] = temp[preIndex].splice(index,1)
+                      temp[preIndex].splice(index, 1);
+                      console.log(temp[preIndex]);
+                      setAmounts(temp);
+                      console.log(amounts);
+                    }}
+                  >
+                    <div className="text-xl bg-red-300 text-white border-2 border-black rounded-full pl-1 pr-1 pt-0.5 pb-0.5">
+                      ❌
+                    </div>
+                  </button>
                 </td>
               </tr>
             ))
