@@ -131,7 +131,7 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
           <button
             className={`${
               editing ? "bg-blue-300" : "bg-yellow-300"
-            } rounded-full pr-3 pl-3 pt-1 pb-1`}
+            } rounded-full p-2`}
             onClick={() => setEditing(!editing)}
           >
             {!editing ? (
