@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { apiURL } from "../Consts";
 
 const LoginWindow = () => {
   const [username, setusername] = useState("");
@@ -11,7 +12,7 @@ const LoginWindow = () => {
     setloginBtnText("Logging in...");
     const loginData = { username, password };
     axios
-      .post("http://localhost:8080/login", loginData)
+      .post(`${apiURL}login`, loginData)
       .then((reponse) => {
         setloginBtnText("Logged in...");
         console.log(reponse.data);

@@ -134,15 +134,48 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
             } rounded-full pr-3 pl-3 pt-1 pb-1`}
             onClick={() => setEditing(!editing)}
           >
-            {!editing ? "⤵️" : "⤴️"}
-          </button>&nbsp;&nbsp;
+            {!editing ? (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 13l-7 7-7-7m14-8l-7 7-7-7"
+                />
+              </svg>
+            )}
+          </button>
+          &nbsp;&nbsp;
           <label className="text-right">{amounts[index]?.length || 0}</label>
         </td>
         <td className="px-6 py-2 border-b-2 border-black">{item.name}</td>
         <td className="px-6 py-2 border-b-2 border-black text-right">
           <label>{require("lodash").sum(amounts[index]) || 0}</label>
         </td>
-        <td className="px-6 py-2 border-b-2 border-black text-right">{item.price}</td>
+        <td className="px-6 py-2 border-b-2 border-black text-right">
+          {item.price}
+        </td>
         <td className="px-6 py-2 border-b-2 border-black text-right">
           {item.price * require("lodash").sum(amounts[index]) || 0}
         </td>

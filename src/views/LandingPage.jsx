@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import LoginWindow from "../components/LoginWindow";
 import Dashboard from "../components/Dashboard";
 import axios from "axios";
+import { apiURL, token } from "../Consts";
 
 const LandingPage = () => {
   useEffect(() => {
@@ -37,10 +38,9 @@ const LandingPage = () => {
   const [loggedInUserUsername, setLoggedInUserUsername] = useState(null);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   function VerifyCurrentUser() {
-    const token = localStorage.getItem("JWToken") || "";
     axios
-      .get("http://localhost:8080/currentUser", {
-        headers: { "auth-token": token },
+      .get(`${apiURL}currentUser`, {
+        headers: { "auth-token": token() },
       })
       .then((response) => {
         // console.log(response.data);
