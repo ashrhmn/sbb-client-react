@@ -10,8 +10,9 @@ const NewEntry = () => {
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerDue, setCustomerDue] = useState("");
   const [amounts, setAmounts] = useState([]);
+  const [customRate, setCustomRate] = useState([]);
   return (
-    <div>
+    <div className="mb-40">
       <h1>New Entry</h1>
       <div>
         <div className="grid grid-cols-2 w-full bg-red-300">
@@ -102,13 +103,21 @@ const NewEntry = () => {
             <tbody>
               {itemData?.map((item, index) => (
                 <TableRow
+                  itemData={itemData}
                   item={item}
                   amounts={amounts}
                   setAmounts={setAmounts}
+                  customRate={customRate}
+                  setCustomRate={setCustomRate}
                   index={index}
                   key={item.id}
                 />
               ))}
+              <SummationRow
+                customRate={customRate}
+                amounts={amounts}
+                itemData={itemData}
+              />
             </tbody>
           </table>
         </div>
@@ -119,7 +128,54 @@ const NewEntry = () => {
 
 export default NewEntry;
 
-const TableRow = ({ item, amounts, index, setAmounts }) => {
+const SummationRow = ({ itemData, amounts, customRate }) => {
+  const TotalItemCount = () => {
+    let count = 0;
+    for (let i = 0; i < amounts.length; ++i) {
+      if (amounts[i]) {
+        count += parseInt(amounts[i].length);
+      }
+    }
+    return count;
+  };
+
+  const TotalPrice = () => {
+    let price = 0;
+    for (let i = 0; i < amounts.length; ++i) {
+      if (amounts[i]) {
+        price += parseInt(
+          require("lodash").sum(amounts[i]) *
+            (customRate[i] && customRate[i]?.enabled
+              ? customRate[i]?.rate
+              : itemData[i].price)
+        );
+      }
+    }
+    return price;
+  };
+
+  return (
+    <tr>
+      <td>
+        <TotalItemCount />
+      </td>
+      <td colSpan={3}>Total</td>
+      <td>
+        <TotalPrice />
+      </td>
+    </tr>
+  );
+};
+
+const TableRow = ({
+  item,
+  amounts,
+  index,
+  setAmounts,
+  customRate,
+  setCustomRate,
+  itemData,
+}) => {
   const [editing, setEditing] = useState(false);
   return (
     <>
@@ -174,10 +230,14 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
           <label>{require("lodash").sum(amounts[index]) || 0}</label>
         </td>
         <td className="px-6 py-2 border-b-2 border-black text-right">
-          {item.price}
+          {customRate[index] && customRate[index]?.enabled
+            ? customRate[index]?.rate
+            : item.price}
         </td>
         <td className="px-6 py-2 border-b-2 border-black text-right">
-          {item.price * require("lodash").sum(amounts[index]) || 0}
+          {(customRate[index] && customRate[index]?.enabled
+            ? customRate[index]?.rate
+            : item.price) * require("lodash").sum(amounts[index]) || 0}
         </td>
       </tr>
       {editing ? (
@@ -187,6 +247,9 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
               preIndex={index}
               amounts={amounts}
               setAmounts={setAmounts}
+              customRate={customRate}
+              setCustomRate={setCustomRate}
+              itemData={itemData}
             />
           </td>
         </tr>
@@ -197,7 +260,14 @@ const TableRow = ({ item, amounts, index, setAmounts }) => {
   );
 };
 
-const EditForm = ({ preIndex, amounts, setAmounts }) => {
+const EditForm = ({
+  preIndex,
+  amounts,
+  setAmounts,
+  customRate,
+  setCustomRate,
+  itemData,
+}) => {
   const [amount, setAmount] = useState(0);
   return (
     <div className="bg-yellow-300 p-2">
@@ -221,9 +291,7 @@ const EditForm = ({ preIndex, amounts, setAmounts }) => {
                   }
                   if (amount) {
                     temp[preIndex].push(parseFloat(amount));
-                    console.log(temp[preIndex]);
                     setAmounts(temp);
-                    console.log(amounts);
                   }
                 }}
               >
@@ -246,11 +314,8 @@ const EditForm = ({ preIndex, amounts, setAmounts }) => {
                   <button
                     onClick={() => {
                       var temp = [...amounts];
-                      //   temp[preIndex] = temp[preIndex].splice(index,1)
                       temp[preIndex].splice(index, 1);
-                      console.log(temp[preIndex]);
                       setAmounts(temp);
-                      console.log(amounts);
                     }}
                   >
                     <div className="text-xl bg-red-300 text-white border-2 border-black rounded-full pl-1 pr-1 pt-0.5 pb-0.5">
@@ -263,6 +328,51 @@ const EditForm = ({ preIndex, amounts, setAmounts }) => {
           ) : (
             <></>
           )}
+          <tr>
+            <td colSpan={2}>
+              <input
+                value={customRate[preIndex]?.rate || ""}
+                onChange={(e) => {
+                  var temp = [...customRate];
+                  if (!temp[preIndex]) {
+                    temp[preIndex] = {
+                      enabled: e.target.value ? true : false,
+                      rate: e.target.value,
+                    };
+                  } else {
+                    temp[preIndex].rate = e.target.value;
+                    temp[preIndex].enabled = e.target.value ? true : false;
+                  }
+                  setCustomRate(temp);
+                  console.log(customRate);
+                }}
+                className="w-32 text-right"
+                type="text"
+              />
+            </td>
+            <td>
+              <input
+                checked={customRate[preIndex]?.enabled || false}
+                onChange={(e) => {
+                  var temp = [...customRate];
+                  if (!temp[preIndex]) {
+                    temp[preIndex] = {
+                      enabled: e.target.checked,
+                      rate: itemData[preIndex]?.price,
+                    };
+                  } else {
+                    temp[preIndex].enabled = e.target.checked;
+                  }
+                  setCustomRate(temp);
+                  console.log(customRate);
+                }}
+                className=""
+                type="checkbox"
+              />
+              &nbsp;
+              <label className="text-sm">Custom</label>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
