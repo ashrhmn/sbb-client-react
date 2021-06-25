@@ -1,16 +1,76 @@
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { useState } from "react";
+import { update } from "../../api/GenericApi";
 
 const NewEntry = () => {
   const itemData = useQueryClient().getQueryData(["items"]);
   const [date, setDate] = useState("");
   const [customerId, setCustomerId] = useState("");
+  const [invoiceId, setInvoiceId] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [customerAddress, setCustomerAddress] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerDue, setCustomerDue] = useState("");
   const [amounts, setAmounts] = useState([]);
   const [customRate, setCustomRate] = useState([]);
+
+  const { mutate: updateInvoiceItems } = useMutation(
+    (data) => {
+      update("invoiceItems", data);
+    },
+    {
+      onSuccess: () => {
+        // console.log("updated");
+      },
+    }
+  );
+
+  const { mutate: updateInvoices } = useMutation(
+    (invoice) => {
+      // update(invoice,"invoices");
+      update("invoices", invoice);
+    },
+    {
+      onSuccess: (data) => {
+        console.log(data);
+      }
+      ,
+      // onSettled: (data, error, variables, context) => {
+      //   // I will fire first
+      //   console.log(data);
+      //   console.log(variables);
+      //   console.log(context);
+      //   console.log(error);
+      // },
+    }
+  );
+
+  const handleSave = () => {
+    for (let i = 0; i < amounts.length; ++i) {
+      if (amounts[i]) {
+        for (let j = 0; j < amounts[i].length; ++j) {
+          const rate =
+            customRate[i] && customRate[i].enabled
+              ? customRate[i].rate
+              : itemData[i].price;
+
+          const data = {
+            invoiceId,
+            itemId: itemData[i].id,
+            amount: amounts[i][j],
+            rate,
+          };
+          console.log(`Inserting : \n ${data}`);
+          updateInvoiceItems(data.id);
+        }
+      }
+    }
+    updateInvoices({
+      customerId,
+      date,
+    });
+  };
+
   return (
     <div className="mb-40">
       <h1>New Entry</h1>
@@ -28,6 +88,32 @@ const NewEntry = () => {
               />
             </div>
           </div>
+          <div className="flex justify-between">
+            <div className="flex justify justify-between bg-green-400 text-2xl p-4">
+              <label>Invoice ID</label>
+              <div>
+                <label> : </label>
+                <input
+                  value={invoiceId}
+                  onChange={(e) => setInvoiceId(e.target.value)}
+                  className="border-2 border-black w-16"
+                  type="text"
+                />
+              </div>
+            </div>
+            <div className="flex justify justify-between bg-green-400 text-2xl p-4">
+              <label>Customer ID</label>
+              <div>
+                <label> : </label>
+                <input
+                  value={customerId}
+                  onChange={(e) => setCustomerId(e.target.value)}
+                  className="border-2 border-black w-16"
+                  type="text"
+                />
+              </div>
+            </div>
+          </div>
           <div className="flex justify justify-between bg-green-400 text-2xl p-4">
             <label>Phone</label>
             <div>
@@ -40,18 +126,7 @@ const NewEntry = () => {
               />
             </div>
           </div>
-          <div className="flex justify justify-between bg-green-400 text-2xl p-4">
-            <label>ID</label>
-            <div>
-              <label> : </label>
-              <input
-                value={customerId}
-                onChange={(e) => setCustomerId(e.target.value)}
-                className="border-2 border-black w-80"
-                type="text"
-              />
-            </div>
-          </div>
+
           <div className="flex justify justify-between bg-green-400 text-2xl p-4">
             <label>Name</label>
             <div>
@@ -118,6 +193,11 @@ const NewEntry = () => {
                 amounts={amounts}
                 itemData={itemData}
               />
+              <tr>
+                <td>
+                  <button onClick={handleSave}>Save</button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -155,12 +235,14 @@ const SummationRow = ({ itemData, amounts, customRate }) => {
   };
 
   return (
-    <tr>
-      <td>
+    <tr className="bg-indigo-300 text-right">
+      <td className="px-6 py-2">
         <TotalItemCount />
       </td>
-      <td colSpan={3}>Total</td>
-      <td>
+      <td className="px-6 py-2" colSpan={3}>
+        Total
+      </td>
+      <td className="px-6 py-2">
         <TotalPrice />
       </td>
     </tr>
@@ -329,7 +411,7 @@ const EditForm = ({
             <></>
           )}
           <tr>
-            <td colSpan={2}>
+            <td className="pt-8" colSpan={2}>
               <input
                 value={customRate[preIndex]?.rate || ""}
                 onChange={(e) => {

@@ -8,8 +8,9 @@ const AddForm = () => {
     const { mutate: updateData } = useMutation(
       (item) => ItemsApi.updateItem(item),
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           queryClient.invalidateQueries(["items"]);
+          console.log(data);
         },
       }
     );
