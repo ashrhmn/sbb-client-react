@@ -14,38 +14,29 @@ const NewEntry = () => {
   const [amounts, setAmounts] = useState([]);
   const [customRate, setCustomRate] = useState([]);
 
-  const { mutate: updateInvoiceItems } = useMutation(
-    (data) => {
-      update("invoiceItems", data);
-    },
+  const { mutate: updateInvoices } = useMutation(
+    (invoice) => update("invoices", invoice),
     {
-      onSuccess: () => {
-        // console.log("updated");
+      onSuccess: (data) => {
+        console.log("updated invoice");
+        console.log(data);
+        setInvoiceId(data.id);
+        saveInvoiceItems(data.id);
       },
     }
   );
 
-  const { mutate: updateInvoices } = useMutation(
-    (invoice) => {
-      // update(invoice,"invoices");
-      update("invoices", invoice);
-    },
+  const { mutate: updateInvoiceItems } = useMutation(
+    (invoiceItem) => update("invoiceItems", invoiceItem),
     {
       onSuccess: (data) => {
+        console.log("updated Invoiceitems");
         console.log(data);
-      }
-      ,
-      // onSettled: (data, error, variables, context) => {
-      //   // I will fire first
-      //   console.log(data);
-      //   console.log(variables);
-      //   console.log(context);
-      //   console.log(error);
-      // },
+      },
     }
   );
 
-  const handleSave = () => {
+  const saveInvoiceItems = (newInvoiceId) => {
     for (let i = 0; i < amounts.length; ++i) {
       if (amounts[i]) {
         for (let j = 0; j < amounts[i].length; ++j) {
@@ -55,20 +46,26 @@ const NewEntry = () => {
               : itemData[i].price;
 
           const data = {
-            invoiceId,
+            invoiceId : newInvoiceId,
             itemId: itemData[i].id,
             amount: amounts[i][j],
             rate,
           };
-          console.log(`Inserting : \n ${data}`);
-          updateInvoiceItems(data.id);
+          updateInvoiceItems(data);
         }
       }
     }
-    updateInvoices({
+  };
+
+  const handleSave = () => {
+    let invoice = {
       customerId,
       date,
-    });
+    };
+    if (invoiceId) {
+      invoice.id = invoiceId;
+    }
+    updateInvoices(invoice);
   };
 
   return (
@@ -84,7 +81,7 @@ const NewEntry = () => {
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
                 className="border-2 border-black w-80"
-                type="text"
+                type="date"
               />
             </div>
           </div>
